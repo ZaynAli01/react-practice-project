@@ -1,0 +1,7 @@
+.body {
+  position: relative;
+  height: calc(100vh - 4rem) !important;
+  width: 99vw;
+  background-color: rgb(59, 59, 59);
+  color: white;
+}
