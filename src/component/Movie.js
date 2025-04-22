@@ -1,43 +1,53 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import DarkModeContext from './DarkModeContext'
+import { data } from 'react-router-dom';
 
 export default function Movie() {
 
   const { isActive } = useContext(DarkModeContext)
-  const movies = [
-    { name: "John Wick", genre: "Action" },
-    { name: "The Conjuring", genre: "Horror" },
-    { name: "La La Land", genre: "Romance" },
-    { name: "The Hangover", genre: "Comedy" },
-    { name: "World War Z", genre: "Horror/Action" },
-    { name: "The Notebook", genre: "Romance" },
-    { name: "Mad Max: Fury Road", genre: "Action" },
-    { name: "Get Out", genre: "Horror" },
-    { name: "Pride and Prejudice", genre: "Romance" },
-    { name: "Superbad", genre: "Comedy" },
-    { name: "Train to Busan", genre: "Horror/Action" },
-    { name: "Before Sunrise", genre: "Romance" },
-    { name: "Blade", genre: "Action/Horror" },
-    { name: "Bridesmaids", genre: "Comedy" },
-    { name: "A Quiet Place", genre: "Horror" },
-  ]
+  const [moviesData, setMoviesData] = useState([])
+
+  const getMovies = async () => {
+    try {
+      let data = await fetch('https://movie-database-api1.p.rapidapi.com/list_movies.json?limit=15', {
+        method: 'GET',
+        headers: {
+          'x-rapidapi-host': 'movie-database-api1.p.rapidapi.com',
+          'x-rapidapi-key': '42c10e19eamsh38ed1982908640ep10050djsn2620bfe2726a'
+        }
+      })
+        .then((res) => res.json())
+        .then((data) => setMoviesData(data.data.movies))
+    } catch (error) {
+      console.error("Error fetching movies:", error);
+    }
+  };
+
+
+  useEffect(() => {
+    getMovies()
+  }, [])
+
   return (
     <div className={`${isActive ? 'body' : ''} d-flex justify-content-center`}>
       <div className="container position-absolute mt-3">
         <table className={`table table-striped ${isActive ? 'table-dark' : ''}`}>
-          <thead className={`bg-secondary text-light`}>
+          <thead className="bg-secondary text-light">
             <tr>
               <th scope="col">#</th>
-              <th scope="col">Moive Name</th>
+              <th scope="col">Movie Name</th> {/* typo fixed here too */}
               <th scope="col">Category</th>
+              <th scope='col'> Video </th>
             </tr>
           </thead>
           <tbody>
-            {movies.map((item, key) => (
+            {moviesData.map((item, key) => (
               <tr key={key}>
                 <td>{key + 1}</td>
-                <td>{item.name}</td>
-                <td>{item.genre}</td>
+                <td>{item.title}</td>
+                <td>{item.genres.join(" , ")}</td>
+                <td><a href={item.url} className={`text-decoration-none  ${isActive ? 'text-light' : 'text-dark'}`}>{item.url}</a> </td>
+
               </tr>
             ))}
           </tbody>
